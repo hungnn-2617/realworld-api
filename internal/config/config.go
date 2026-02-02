@@ -8,12 +8,17 @@ import (
 
 type Config struct {
 	App      AppConfig
+	Server   ServerConfig
 	Database DatabaseConfig
 	JWT      JWTConfig
 }
 
 type AppConfig struct {
-	Env  string
+	Env string
+}
+
+type ServerConfig struct {
+	Host string
 	Port string
 }
 
@@ -40,8 +45,11 @@ func Load() *Config {
 	once.Do(func() {
 		config = &Config{
 			App: AppConfig{
-				Env:  getEnv("APP_ENV", "development"),
-				Port: getEnv("APP_PORT", "8080"),
+				Env: getEnv("APP_ENV", "development"),
+			},
+			Server: ServerConfig{
+				Host: getEnv("SERVER_HOST", "0.0.0.0"),
+				Port: getEnv("SERVER_PORT", "8080"),
 			},
 			Database: DatabaseConfig{
 				Host:     getEnv("DB_HOST", "localhost"),

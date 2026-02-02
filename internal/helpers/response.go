@@ -97,3 +97,13 @@ func Created(c *gin.Context, data interface{}) {
 func NoContent(c *gin.Context) {
 	c.Status(http.StatusNoContent)
 }
+
+// Error is a shorthand for RespondWithError
+func Error(c *gin.Context, statusCode int, message string) {
+	RespondWithError(c, statusCode, message)
+}
+
+// SuccessResponse is a shorthand for Success
+func SuccessResponse(c *gin.Context, statusCode int, data interface{}) {
+	Success(c, statusCode, data)
+}

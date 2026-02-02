@@ -10,7 +10,7 @@ import (
 
 const (
 	AuthorizationHeader = "Authorization"
-	AuthorizationType   = "Token"
+	AuthorizationType   = "Bearer"
 	ContextUserID       = "userID"
 	ContextUsername     = "username"
 	ContextEmail        = "email"
