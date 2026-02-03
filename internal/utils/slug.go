@@ -3,52 +3,36 @@ package utils
 import (
 	"regexp"
 	"strings"
+	"unicode"
+
+	"golang.org/x/text/runes"
+	"golang.org/x/text/transform"
+	"golang.org/x/text/unicode/norm"
 )
 
-func Slugify(s string) string {
-	s = strings.ToLower(s)
+func GenerateSlug(title string) string {
+	slug := strings.ToLower(title)
 
-	s = strings.ReplaceAll(s, " ", "-")
+	t := transform.Chain(norm.NFD, runes.Remove(runes.In(unicode.Mn)), norm.NFC)
+	slug, _, _ = transform.String(t, slug)
 
-	reg := regexp.MustCompile("[^a-z0-9-]+")
-	s = reg.ReplaceAllString(s, "")
+	slug = strings.ReplaceAll(slug, " ", "-")
 
-	reg = regexp.MustCompile("-+")
-	s = reg.ReplaceAllString(s, "-")
+	reg := regexp.MustCompile(`[^a-z0-9-]`)
+	slug = reg.ReplaceAllString(slug, "")
 
-	s = strings.Trim(s, "-")
+	reg = regexp.MustCompile(`-+`)
+	slug = reg.ReplaceAllString(slug, "-")
 
-	return s
+	slug = strings.Trim(slug, "-")
+
+	return slug
 }
 
-func GenerateUniqueSlug(title string, existingSlugs []string) string {
-	baseSlug := Slugify(title)
-
-	isUnique := true
-	for _, existing := range existingSlugs {
-		if existing == baseSlug {
-			isUnique = false
-			break
-		}
+func GenerateUniqueSlug(title string, suffix string) string {
+	slug := GenerateSlug(title)
+	if suffix != "" {
+		slug = slug + "-" + suffix
 	}
-
-	if isUnique {
-		return baseSlug
-	}
-
-	counter := 1
-	for {
-		newSlug := baseSlug + "-" + string(rune('0'+counter))
-		isUnique = true
-		for _, existing := range existingSlugs {
-			if existing == newSlug {
-				isUnique = false
-				break
-			}
-		}
-		if isUnique {
-			return newSlug
-		}
-		counter++
-	}
+	return slug
 }

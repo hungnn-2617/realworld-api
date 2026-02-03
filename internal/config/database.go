@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/realworld-api/internal/models"
+	"realworld-api/internal/models"
+
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -31,6 +32,10 @@ func InitDB() error {
 	if err := db.AutoMigrate(
 		&models.User{},
 		&models.Follow{},
+		&models.Tag{},
+		&models.Article{},
+		&models.Comment{},
+		&models.Favorite{},
 	); err != nil {
 		return fmt.Errorf("failed to migrate database: %w", err)
 	}

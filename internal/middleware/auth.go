@@ -4,8 +4,9 @@ import (
 	"net/http"
 	"strings"
 
+	"realworld-api/internal/utils"
+
 	"github.com/gin-gonic/gin"
-	"github.com/realworld-api/internal/utils"
 )
 
 const (

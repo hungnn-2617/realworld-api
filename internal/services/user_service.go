@@ -3,10 +3,11 @@ package services
 import (
 	"errors"
 
-	"github.com/realworld-api/internal/dtos"
-	"github.com/realworld-api/internal/models"
-	"github.com/realworld-api/internal/repositories"
-	"github.com/realworld-api/internal/utils"
+	"realworld-api/internal/dtos"
+	"realworld-api/internal/models"
+	"realworld-api/internal/repositories"
+	"realworld-api/internal/utils"
+
 	"gorm.io/gorm"
 )
 

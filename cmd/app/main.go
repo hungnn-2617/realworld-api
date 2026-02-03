@@ -4,11 +4,12 @@ import (
 	"fmt"
 	"log"
 
+	"realworld-api/internal/bootstrap"
+	"realworld-api/internal/config"
+	"realworld-api/internal/routes"
+
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
-	"github.com/realworld-api/internal/bootstrap"
-	"github.com/realworld-api/internal/config"
-	"github.com/realworld-api/internal/routes"
 )
 
 func main() {

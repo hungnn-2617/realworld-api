@@ -3,7 +3,8 @@ package repositories
 import (
 	"errors"
 
-	"github.com/realworld-api/internal/models"
+	"realworld-api/internal/models"
+
 	"gorm.io/gorm"
 )
 

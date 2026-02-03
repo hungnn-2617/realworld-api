@@ -1,9 +1,10 @@
 package routes
 
 import (
+	"realworld-api/internal/bootstrap"
+	"realworld-api/internal/middleware"
+
 	"github.com/gin-gonic/gin"
-	"github.com/realworld-api/internal/bootstrap"
-	"github.com/realworld-api/internal/middleware"
 )
 
 func SetupRoutes(router *gin.Engine, appContainer *bootstrap.AppContainer) {
@@ -34,6 +35,37 @@ func SetupRoutes(router *gin.Engine, appContainer *bootstrap.AppContainer) {
 		{
 			user.GET("", appContainer.UserHandler.GetCurrentUser) // Get current user
 			user.PUT("", appContainer.UserHandler.UpdateUser)     // Update current user
+		}
+
+		// Article routes
+		articles := api.Group("/articles")
+		{
+			// Feed endpoint (requires auth) - must be before /:slug
+			articles.GET("/feed", middleware.AuthRequired(), appContainer.ArticleHandler.FeedArticles)
+
+			// List articles (optional auth)
+			articles.GET("", middleware.AuthOptional(), appContainer.ArticleHandler.ListArticles)
+
+			// Get single article (no auth required)
+			articles.GET("/:slug", appContainer.ArticleHandler.GetArticle)
+
+			// Create article (requires auth)
+			articles.POST("", middleware.AuthRequired(), appContainer.ArticleHandler.CreateArticle)
+
+			// Update article (requires auth)
+			articles.PUT("/:slug", middleware.AuthRequired(), appContainer.ArticleHandler.UpdateArticle)
+
+			// Delete article (requires auth)
+			articles.DELETE("/:slug", middleware.AuthRequired(), appContainer.ArticleHandler.DeleteArticle)
+
+			// Favorite/unfavorite article (requires auth)
+			articles.POST("/:slug/favorite", middleware.AuthRequired(), appContainer.ArticleHandler.FavoriteArticle)
+			articles.DELETE("/:slug/favorite", middleware.AuthRequired(), appContainer.ArticleHandler.UnfavoriteArticle)
+
+			// Comments (requires auth for POST/DELETE, optional for GET)
+			articles.POST("/:slug/comments", middleware.AuthRequired(), appContainer.ArticleHandler.AddComment)
+			articles.GET("/:slug/comments", middleware.AuthOptional(), appContainer.ArticleHandler.GetComments)
+			articles.DELETE("/:slug/comments/:id", middleware.AuthRequired(), appContainer.ArticleHandler.DeleteComment)
 		}
 	}
 }

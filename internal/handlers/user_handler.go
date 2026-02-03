@@ -3,11 +3,12 @@ package handlers
 import (
 	"net/http"
 
+	"realworld-api/internal/dtos"
+	"realworld-api/internal/helpers"
+	"realworld-api/internal/models"
+	"realworld-api/internal/services"
+
 	"github.com/gin-gonic/gin"
-	"github.com/realworld-api/internal/dtos"
-	"github.com/realworld-api/internal/helpers"
-	"github.com/realworld-api/internal/models"
-	"github.com/realworld-api/internal/services"
 )
 
 type UserHandler struct {
