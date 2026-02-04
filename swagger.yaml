@@ -22,6 +22,8 @@ tags:
     description: Comment operations
   - name: profiles
     description: User profile operations
+  - name: tags
+    description: Tags operations
 
 paths:
   /health:
@@ -29,7 +31,7 @@ paths:
       summary: Health check
       description: Check if the API is running
       responses:
-        '200':
+        "200":
           description: API is running
           content:
             application/json:
@@ -54,26 +56,26 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RegisterRequest'
+              $ref: "#/components/schemas/RegisterRequest"
       responses:
-        '201':
+        "201":
           description: User successfully registered
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserResponse'
-        '400':
+                $ref: "#/components/schemas/UserResponse"
+        "400":
           description: Bad request
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '422':
+                $ref: "#/components/schemas/ErrorResponse"
+        "422":
           description: Validation error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
 
   /api/users/login:
     post:
@@ -86,26 +88,26 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/LoginRequest'
+              $ref: "#/components/schemas/LoginRequest"
       responses:
-        '200':
+        "200":
           description: User successfully logged in
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserResponse'
-        '401':
+                $ref: "#/components/schemas/UserResponse"
+        "401":
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '422':
+                $ref: "#/components/schemas/ErrorResponse"
+        "422":
           description: Validation error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
 
   /api/user:
     get:
@@ -116,19 +118,19 @@ paths:
       security:
         - BearerAuth: []
       responses:
-        '200':
+        "200":
           description: Current user information
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserResponse'
-        '401':
+                $ref: "#/components/schemas/UserResponse"
+        "401":
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-    
+                $ref: "#/components/schemas/ErrorResponse"
+
     put:
       tags:
         - user
@@ -141,32 +143,32 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateUserRequest'
+              $ref: "#/components/schemas/UpdateUserRequest"
       responses:
-        '200':
+        "200":
           description: User successfully updated
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserResponse'
-        '400':
+                $ref: "#/components/schemas/UserResponse"
+        "400":
           description: Bad request
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '422':
+                $ref: "#/components/schemas/ErrorResponse"
+        "422":
           description: Validation error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
 
   /api/articles:
     get:
@@ -203,13 +205,13 @@ paths:
             type: integer
             default: 0
       responses:
-        '200':
+        "200":
           description: List of articles
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ArticlesResponse'
-    
+                $ref: "#/components/schemas/ArticlesResponse"
+
     post:
       tags:
         - articles
@@ -222,26 +224,26 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateArticleRequest'
+              $ref: "#/components/schemas/CreateArticleRequest"
       responses:
-        '201':
+        "201":
           description: Article successfully created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ArticleResponse'
-        '401':
+                $ref: "#/components/schemas/ArticleResponse"
+        "401":
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '422':
+                $ref: "#/components/schemas/ErrorResponse"
+        "422":
           description: Validation error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
 
   /api/articles/feed:
     get:
@@ -265,18 +267,18 @@ paths:
             type: integer
             default: 0
       responses:
-        '200':
+        "200":
           description: User's feed articles
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ArticlesResponse'
-        '401':
+                $ref: "#/components/schemas/ArticlesResponse"
+        "401":
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
 
   /api/articles/{slug}:
     get:
@@ -292,19 +294,19 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Article details
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ArticleResponse'
-        '404':
+                $ref: "#/components/schemas/ArticleResponse"
+        "404":
           description: Article not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-    
+                $ref: "#/components/schemas/ErrorResponse"
+
     put:
       tags:
         - articles
@@ -324,39 +326,39 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateArticleRequest'
+              $ref: "#/components/schemas/UpdateArticleRequest"
       responses:
-        '200':
+        "200":
           description: Article successfully updated
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ArticleResponse'
-        '401':
+                $ref: "#/components/schemas/ArticleResponse"
+        "401":
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
           description: Forbidden - Not authorized to update this article
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
           description: Article not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '422':
+                $ref: "#/components/schemas/ErrorResponse"
+        "422":
           description: Validation error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-    
+                $ref: "#/components/schemas/ErrorResponse"
+
     delete:
       tags:
         - articles
@@ -372,7 +374,7 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Article successfully deleted
           content:
             application/json:
@@ -382,24 +384,24 @@ paths:
                   message:
                     type: string
                     example: article deleted successfully
-        '401':
+        "401":
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
           description: Forbidden - Not authorized to delete this article
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
           description: Article not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
 
   /api/articles/{slug}/favorite:
     post:
@@ -417,25 +419,25 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Article favorited
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ArticleResponse'
-        '401':
+                $ref: "#/components/schemas/ArticleResponse"
+        "401":
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
           description: Article not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-    
+                $ref: "#/components/schemas/ErrorResponse"
+
     delete:
       tags:
         - articles
@@ -451,24 +453,24 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Article unfavorited
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ArticleResponse'
-        '401':
+                $ref: "#/components/schemas/ArticleResponse"
+        "401":
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
           description: Article not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
 
   /api/articles/{slug}/comments:
     get:
@@ -484,19 +486,19 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: List of comments
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CommentsResponse'
-        '404':
+                $ref: "#/components/schemas/CommentsResponse"
+        "404":
           description: Article not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-    
+                $ref: "#/components/schemas/ErrorResponse"
+
     post:
       tags:
         - comments
@@ -516,32 +518,32 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateCommentRequest'
+              $ref: "#/components/schemas/CreateCommentRequest"
       responses:
-        '200':
+        "200":
           description: Comment successfully added
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CommentResponse'
-        '401':
+                $ref: "#/components/schemas/CommentResponse"
+        "401":
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
           description: Article not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '422':
+                $ref: "#/components/schemas/ErrorResponse"
+        "422":
           description: Validation error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
 
   /api/articles/{slug}/comments/{id}:
     delete:
@@ -565,7 +567,7 @@ paths:
           schema:
             type: integer
       responses:
-        '200':
+        "200":
           description: Comment successfully deleted
           content:
             application/json:
@@ -575,24 +577,44 @@ paths:
                   message:
                     type: string
                     example: comment deleted successfully
-        '401':
+        "401":
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
           description: Forbidden - Not authorized to delete this comment
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
           description: Article or comment not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /api/tags:
+    get:
+      tags:
+        - tags
+      summary: Get all tags
+      description: Get a list of all tags
+      responses:
+        "200":
+          description: List of tags
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TagsResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 
 components:
   securitySchemes:
@@ -745,7 +767,7 @@ components:
       type: object
       properties:
         article:
-          $ref: '#/components/schemas/ArticleData'
+          $ref: "#/components/schemas/ArticleData"
 
     ArticlesResponse:
       type: object
@@ -753,7 +775,7 @@ components:
         articles:
           type: array
           items:
-            $ref: '#/components/schemas/ArticleData'
+            $ref: "#/components/schemas/ArticleData"
         articlesCount:
           type: integer
           example: 1
@@ -793,7 +815,7 @@ components:
           type: integer
           example: 0
         author:
-          $ref: '#/components/schemas/ProfileData'
+          $ref: "#/components/schemas/ProfileData"
 
     CreateCommentRequest:
       type: object
@@ -813,7 +835,7 @@ components:
       type: object
       properties:
         comment:
-          $ref: '#/components/schemas/CommentData'
+          $ref: "#/components/schemas/CommentData"
 
     CommentsResponse:
       type: object
@@ -821,7 +843,7 @@ components:
         comments:
           type: array
           items:
-            $ref: '#/components/schemas/CommentData'
+            $ref: "#/components/schemas/CommentData"
 
     CommentData:
       type: object
@@ -841,7 +863,7 @@ components:
           format: date-time
           example: "2023-01-01T00:00:00Z"
         author:
-          $ref: '#/components/schemas/ProfileData'
+          $ref: "#/components/schemas/ProfileData"
 
     ProfileData:
       type: object
@@ -872,3 +894,12 @@ components:
           example:
             body:
               - error message here
+
+    TagsResponse:
+      type: object
+      properties:
+        tags:
+          type: array
+          items:
+            type: string
+          example: ["dragons", "training", "reactjs", "angularjs"]

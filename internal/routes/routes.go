@@ -37,6 +37,9 @@ func SetupRoutes(router *gin.Engine, appContainer *bootstrap.AppContainer) {
 			user.PUT("", appContainer.UserHandler.UpdateUser)     // Update current user
 		}
 
+		// Tags route (no auth required)
+		api.GET("/tags", appContainer.TagHandler.GetTags)
+
 		// Article routes
 		articles := api.Group("/articles")
 		{
@@ -59,8 +62,8 @@ func SetupRoutes(router *gin.Engine, appContainer *bootstrap.AppContainer) {
 			articles.DELETE("/:slug", middleware.AuthRequired(), appContainer.ArticleHandler.DeleteArticle)
 
 			// Favorite/unfavorite article (requires auth)
-			articles.POST("/:slug/favorite", middleware.AuthRequired(), appContainer.ArticleHandler.FavoriteArticle)
-			articles.DELETE("/:slug/favorite", middleware.AuthRequired(), appContainer.ArticleHandler.UnfavoriteArticle)
+			articles.POST("/:slug/favorite", middleware.AuthRequired(), appContainer.FavoriteHandler.FavoriteArticle)
+			articles.DELETE("/:slug/favorite", middleware.AuthRequired(), appContainer.FavoriteHandler.UnfavoriteArticle)
 
 			// Comments (requires auth for POST/DELETE, optional for GET)
 			articles.POST("/:slug/comments", middleware.AuthRequired(), appContainer.CommentHandler.AddComment)

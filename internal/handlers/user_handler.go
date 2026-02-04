@@ -21,17 +21,6 @@ func NewUserHandler(userService *services.UserService) *UserHandler {
 	}
 }
 
-// Register godoc
-// @Summary Register a new user
-// @Description Register a new user with username, email and password
-// @Tags users
-// @Accept json
-// @Produce json
-// @Param user body dtos.RegisterRequest true "User registration data"
-// @Success 201 {object} dtos.UserResponse
-// @Failure 400 {object} dtos.ErrorResponse
-// @Failure 422 {object} dtos.ErrorResponse
-// @Router /api/users [post]
 func (h *UserHandler) Register(c *gin.Context) {
 	var req dtos.RegisterRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -48,17 +37,6 @@ func (h *UserHandler) Register(c *gin.Context) {
 	helpers.SuccessResponse(c, http.StatusCreated, h.toUserResponse(user, token))
 }
 
-// Login godoc
-// @Summary Login user
-// @Description Login with email and password
-// @Tags users
-// @Accept json
-// @Produce json
-// @Param user body dtos.LoginRequest true "User login credentials"
-// @Success 200 {object} dtos.UserResponse
-// @Failure 401 {object} dtos.ErrorResponse
-// @Failure 422 {object} dtos.ErrorResponse
-// @Router /api/users/login [post]
 func (h *UserHandler) Login(c *gin.Context) {
 	var req dtos.LoginRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -75,16 +53,6 @@ func (h *UserHandler) Login(c *gin.Context) {
 	helpers.SuccessResponse(c, http.StatusOK, h.toUserResponse(user, token))
 }
 
-// GetCurrentUser godoc
-// @Summary Get current user
-// @Description Get currently logged-in user
-// @Tags user
-// @Accept json
-// @Produce json
-// @Security Bearer
-// @Success 200 {object} dtos.UserResponse
-// @Failure 401 {object} dtos.ErrorResponse
-// @Router /api/user [get]
 func (h *UserHandler) GetCurrentUser(c *gin.Context) {
 	userID, exists := c.Get("userID")
 	if !exists {
@@ -102,19 +70,6 @@ func (h *UserHandler) GetCurrentUser(c *gin.Context) {
 	helpers.SuccessResponse(c, http.StatusOK, h.toUserResponse(user, token))
 }
 
-// UpdateUser godoc
-// @Summary Update current user
-// @Description Update currently logged-in user's profile
-// @Tags user
-// @Accept json
-// @Produce json
-// @Security Bearer
-// @Param user body dtos.UpdateUserRequest true "User update data"
-// @Success 200 {object} dtos.UserResponse
-// @Failure 400 {object} dtos.ErrorResponse
-// @Failure 401 {object} dtos.ErrorResponse
-// @Failure 422 {object} dtos.ErrorResponse
-// @Router /api/user [put]
 func (h *UserHandler) UpdateUser(c *gin.Context) {
 	userID, exists := c.Get("userID")
 	if !exists {
