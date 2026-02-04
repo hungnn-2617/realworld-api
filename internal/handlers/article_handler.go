@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"realworld-api/internal/dtos"
+	appErrors "realworld-api/internal/errors"
 	"realworld-api/internal/helpers"
 	"realworld-api/internal/middleware"
 	"realworld-api/internal/repositories"
@@ -54,7 +55,7 @@ func (h *ArticleHandler) GetArticle(c *gin.Context) {
 
 	article, err := h.articleService.GetBySlug(slug)
 	if err != nil {
-		helpers.NotFound(c, "article not found")
+		helpers.NotFound(c, appErrors.ErrArticleNotFound)
 		return
 	}
 
@@ -84,10 +85,10 @@ func (h *ArticleHandler) UpdateArticle(c *gin.Context) {
 
 	article, err := h.articleService.Update(slug, &req, userID)
 	if err != nil {
-		if err.Error() == "article not found" {
-			helpers.NotFound(c, err.Error())
-		} else if err.Error() == "not authorized to update this article" {
-			helpers.Forbidden(c, err.Error())
+		if appErrors.IsArticleNotFound(err) {
+			helpers.NotFound(c, appErrors.ErrArticleNotFound)
+		} else if appErrors.IsNotAuthorizedUpdate(err) {
+			helpers.Forbidden(c, appErrors.ErrNotAuthorizedUpdate)
 		} else {
 			helpers.UnprocessableEntity(c, err.Error())
 		}
@@ -111,10 +112,10 @@ func (h *ArticleHandler) DeleteArticle(c *gin.Context) {
 
 	err := h.articleService.Delete(slug, userID)
 	if err != nil {
-		if err.Error() == "article not found" {
-			helpers.NotFound(c, err.Error())
-		} else if err.Error() == "not authorized to delete this article" {
-			helpers.Forbidden(c, err.Error())
+		if appErrors.IsArticleNotFound(err) {
+			helpers.NotFound(c, appErrors.ErrArticleNotFound)
+		} else if appErrors.IsNotAuthorizedDelete(err) {
+			helpers.Forbidden(c, appErrors.ErrNotAuthorizedDelete)
 		} else {
 			helpers.UnprocessableEntity(c, err.Error())
 		}

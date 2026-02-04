@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"realworld-api/internal/dtos"
+	appErrors "realworld-api/internal/errors"
 	"realworld-api/internal/helpers"
 	"realworld-api/internal/middleware"
 	"realworld-api/internal/services"
@@ -33,8 +34,8 @@ func (h *FavoriteHandler) FavoriteArticle(c *gin.Context) {
 
 	article, err := h.articleService.Favorite(slug, userID)
 	if err != nil {
-		if err.Error() == "article not found" {
-			helpers.NotFound(c, err.Error())
+		if appErrors.IsArticleNotFound(err) {
+			helpers.NotFound(c, appErrors.ErrArticleNotFound)
 		} else {
 			helpers.UnprocessableEntity(c, err.Error())
 		}
@@ -58,8 +59,8 @@ func (h *FavoriteHandler) UnfavoriteArticle(c *gin.Context) {
 
 	article, err := h.articleService.Unfavorite(slug, userID)
 	if err != nil {
-		if err.Error() == "article not found" {
-			helpers.NotFound(c, err.Error())
+		if appErrors.IsArticleNotFound(err) {
+			helpers.NotFound(c, appErrors.ErrArticleNotFound)
 		} else {
 			helpers.UnprocessableEntity(c, err.Error())
 		}

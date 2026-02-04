@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"realworld-api/internal/dtos"
+	appErrors "realworld-api/internal/errors"
 	"realworld-api/internal/models"
 	"realworld-api/internal/repositories"
 
@@ -29,7 +30,7 @@ func (s *CommentService) AddComment(slug string, req *dtos.CreateCommentRequest,
 	// Find article by slug
 	article, err := s.articleRepo.FindBySlug(slug)
 	if err != nil {
-		return nil, errors.New("article not found")
+		return nil, errors.New(appErrors.ErrArticleNotFound)
 	}
 
 	// Create comment
@@ -51,7 +52,7 @@ func (s *CommentService) GetComments(slug string) ([]models.Comment, error) {
 	// Find article by slug
 	article, err := s.articleRepo.FindBySlug(slug)
 	if err != nil {
-		return nil, errors.New("article not found")
+		return nil, errors.New(appErrors.ErrArticleNotFound)
 	}
 
 	return s.commentRepo.FindByArticleID(article.ID)
@@ -61,18 +62,18 @@ func (s *CommentService) DeleteComment(slug string, commentID uint, userID uint)
 	// Find article by slug
 	_, err := s.articleRepo.FindBySlug(slug)
 	if err != nil {
-		return errors.New("article not found")
+		return errors.New(appErrors.ErrArticleNotFound)
 	}
 
 	// Find comment
 	comment, err := s.commentRepo.FindByID(commentID)
 	if err != nil {
-		return errors.New("comment not found")
+		return errors.New(appErrors.ErrCommentNotFound)
 	}
 
 	// Check if user is the author of the comment
 	if comment.AuthorID != userID {
-		return errors.New("not authorized to delete this comment")
+		return errors.New(appErrors.ErrNotAuthorizedDeleteComment)
 	}
 
 	return s.commentRepo.Delete(comment)

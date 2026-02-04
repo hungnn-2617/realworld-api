@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"realworld-api/internal/dtos"
+	appErrors "realworld-api/internal/errors"
 	"realworld-api/internal/helpers"
 	"realworld-api/internal/models"
 	"realworld-api/internal/services"
@@ -56,13 +57,13 @@ func (h *UserHandler) Login(c *gin.Context) {
 func (h *UserHandler) GetCurrentUser(c *gin.Context) {
 	userID, exists := c.Get("userID")
 	if !exists {
-		helpers.Error(c, http.StatusUnauthorized, "unauthorized")
+		helpers.Error(c, http.StatusUnauthorized, appErrors.ErrUnauthorized)
 		return
 	}
 
 	user, err := h.userService.GetByID(userID.(uint))
 	if err != nil {
-		helpers.Error(c, http.StatusNotFound, "user not found")
+		helpers.Error(c, http.StatusNotFound, appErrors.ErrUserNotFound)
 		return
 	}
 
@@ -73,7 +74,7 @@ func (h *UserHandler) GetCurrentUser(c *gin.Context) {
 func (h *UserHandler) UpdateUser(c *gin.Context) {
 	userID, exists := c.Get("userID")
 	if !exists {
-		helpers.Error(c, http.StatusUnauthorized, "unauthorized")
+		helpers.Error(c, http.StatusUnauthorized, appErrors.ErrUnauthorized)
 		return
 	}
 
@@ -85,7 +86,7 @@ func (h *UserHandler) UpdateUser(c *gin.Context) {
 
 	user, err := h.userService.GetByID(userID.(uint))
 	if err != nil {
-		helpers.Error(c, http.StatusNotFound, "user not found")
+		helpers.Error(c, http.StatusNotFound, appErrors.ErrUserNotFound)
 		return
 	}
 

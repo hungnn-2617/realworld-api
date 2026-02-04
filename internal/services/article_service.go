@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"realworld-api/internal/dtos"
+	appErrors "realworld-api/internal/errors"
 	"realworld-api/internal/models"
 	"realworld-api/internal/repositories"
 
@@ -54,7 +55,7 @@ func (s *ArticleService) Create(req *dtos.CreateArticleRequest, authorID uint) (
 func (s *ArticleService) GetBySlug(slug string) (*models.Article, error) {
 	article, err := s.articleRepo.FindBySlug(slug)
 	if err != nil {
-		return nil, errors.New("article not found")
+		return nil, errors.New(appErrors.ErrArticleNotFound)
 	}
 	return article, nil
 }
@@ -62,11 +63,11 @@ func (s *ArticleService) GetBySlug(slug string) (*models.Article, error) {
 func (s *ArticleService) Update(slug string, req *dtos.UpdateArticleRequest, userID uint) (*models.Article, error) {
 	article, err := s.articleRepo.FindBySlug(slug)
 	if err != nil {
-		return nil, errors.New("article not found")
+		return nil, errors.New(appErrors.ErrArticleNotFound)
 	}
 
 	if article.AuthorID != userID {
-		return nil, errors.New("not authorized to update this article")
+		return nil, errors.New(appErrors.ErrNotAuthorizedUpdate)
 	}
 
 	if req.Article.Title != nil {
@@ -93,11 +94,11 @@ func (s *ArticleService) Update(slug string, req *dtos.UpdateArticleRequest, use
 func (s *ArticleService) Delete(slug string, userID uint) error {
 	article, err := s.articleRepo.FindBySlug(slug)
 	if err != nil {
-		return errors.New("article not found")
+		return errors.New(appErrors.ErrArticleNotFound)
 	}
 
 	if article.AuthorID != userID {
-		return errors.New("not authorized to delete this article")
+		return errors.New(appErrors.ErrNotAuthorizedDelete)
 	}
 
 	return s.articleRepo.Delete(article)
@@ -119,7 +120,7 @@ func (s *ArticleService) Feed(userID uint, limit, offset int) ([]models.Article,
 func (s *ArticleService) Favorite(slug string, userID uint) (*models.Article, error) {
 	article, err := s.articleRepo.FindBySlug(slug)
 	if err != nil {
-		return nil, errors.New("article not found")
+		return nil, errors.New(appErrors.ErrArticleNotFound)
 	}
 
 	if err := s.favoriteRepo.Favorite(userID, article.ID); err != nil {
@@ -132,7 +133,7 @@ func (s *ArticleService) Favorite(slug string, userID uint) (*models.Article, er
 func (s *ArticleService) Unfavorite(slug string, userID uint) (*models.Article, error) {
 	article, err := s.articleRepo.FindBySlug(slug)
 	if err != nil {
-		return nil, errors.New("article not found")
+		return nil, errors.New(appErrors.ErrArticleNotFound)
 	}
 
 	if err := s.favoriteRepo.Unfavorite(userID, article.ID); err != nil {

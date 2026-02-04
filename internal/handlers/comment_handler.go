@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"realworld-api/internal/dtos"
+	appErrors "realworld-api/internal/errors"
 	"realworld-api/internal/helpers"
 	"realworld-api/internal/middleware"
 	"realworld-api/internal/services"
@@ -40,8 +41,8 @@ func (h *CommentHandler) AddComment(c *gin.Context) {
 
 	comment, err := h.commentService.AddComment(slug, &req, userID)
 	if err != nil {
-		if err.Error() == "article not found" {
-			helpers.NotFound(c, err.Error())
+		if appErrors.IsArticleNotFound(err) {
+			helpers.NotFound(c, appErrors.ErrArticleNotFound)
 		} else {
 			helpers.UnprocessableEntity(c, err.Error())
 		}
@@ -59,10 +60,10 @@ func (h *CommentHandler) GetComments(c *gin.Context) {
 
 	comments, err := h.commentService.GetComments(slug)
 	if err != nil {
-		if err.Error() == "article not found" {
-			helpers.NotFound(c, err.Error())
+		if appErrors.IsArticleNotFound(err) {
+			helpers.NotFound(c, appErrors.ErrArticleNotFound)
 		} else {
-			helpers.InternalServerError(c, "failed to fetch comments")
+			helpers.InternalServerError(c, appErrors.ErrFailedToFetch)
 		}
 		return
 	}
@@ -87,18 +88,18 @@ func (h *CommentHandler) DeleteComment(c *gin.Context) {
 	commentIDStr := c.Param("id")
 	commentID, err := strconv.ParseUint(commentIDStr, 10, 32)
 	if err != nil {
-		helpers.BadRequest(c, "invalid comment id")
+		helpers.BadRequest(c, appErrors.ErrInvalidCommentID)
 		return
 	}
 
 	err = h.commentService.DeleteComment(slug, uint(commentID), userID)
 	if err != nil {
-		if err.Error() == "article not found" {
-			helpers.NotFound(c, err.Error())
-		} else if err.Error() == "comment not found" {
-			helpers.NotFound(c, err.Error())
-		} else if err.Error() == "not authorized to delete this comment" {
-			helpers.Forbidden(c, err.Error())
+		if appErrors.IsArticleNotFound(err) {
+			helpers.NotFound(c, appErrors.ErrArticleNotFound)
+		} else if appErrors.IsCommentNotFound(err) {
+			helpers.NotFound(c, appErrors.ErrCommentNotFound)
+		} else if appErrors.IsNotAuthorizedDeleteComment(err) {
+			helpers.Forbidden(c, appErrors.ErrNotAuthorizedDeleteComment)
 		} else {
 			helpers.UnprocessableEntity(c, err.Error())
 		}
