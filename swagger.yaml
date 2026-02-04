@@ -1,0 +1,874 @@
+openapi: 3.0.3
+info:
+  title: RealWorld API
+  description: RealWorld API - A Medium.com clone API implementation
+  version: 1.0.0
+  contact:
+    name: API Support
+servers:
+  - url: http://localhost:8080
+    description: Local development server
+  - url: http://localhost:8080/api
+    description: Local development API endpoint
+
+tags:
+  - name: users
+    description: User registration and authentication
+  - name: user
+    description: Current user operations
+  - name: articles
+    description: Article operations
+  - name: comments
+    description: Comment operations
+  - name: profiles
+    description: User profile operations
+
+paths:
+  /health:
+    get:
+      summary: Health check
+      description: Check if the API is running
+      responses:
+        '200':
+          description: API is running
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+                  message:
+                    type: string
+                    example: RealWorld API is running
+
+  /api/users:
+    post:
+      tags:
+        - users
+      summary: Register a new user
+      description: Register a new user with username, email and password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '201':
+          description: User successfully registered
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/users/login:
+    post:
+      tags:
+        - users
+      summary: Login user
+      description: Login with email and password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: User successfully logged in
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/user:
+    get:
+      tags:
+        - user
+      summary: Get current user
+      description: Get currently logged-in user information
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Current user information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    
+    put:
+      tags:
+        - user
+      summary: Update current user
+      description: Update currently logged-in user's profile
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserRequest'
+      responses:
+        '200':
+          description: User successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/articles:
+    get:
+      tags:
+        - articles
+      summary: List articles
+      description: Get a list of articles with optional filtering
+      parameters:
+        - name: tag
+          in: query
+          description: Filter by tag
+          schema:
+            type: string
+        - name: author
+          in: query
+          description: Filter by author username
+          schema:
+            type: string
+        - name: favorited
+          in: query
+          description: Filter by favorited username
+          schema:
+            type: string
+        - name: limit
+          in: query
+          description: Limit number of articles (default 20)
+          schema:
+            type: integer
+            default: 20
+        - name: offset
+          in: query
+          description: Offset for pagination (default 0)
+          schema:
+            type: integer
+            default: 0
+      responses:
+        '200':
+          description: List of articles
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArticlesResponse'
+    
+    post:
+      tags:
+        - articles
+      summary: Create article
+      description: Create a new article
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateArticleRequest'
+      responses:
+        '201':
+          description: Article successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArticleResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/articles/feed:
+    get:
+      tags:
+        - articles
+      summary: Get user feed
+      description: Get articles from followed users
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: limit
+          in: query
+          description: Limit number of articles (default 20)
+          schema:
+            type: integer
+            default: 20
+        - name: offset
+          in: query
+          description: Offset for pagination (default 0)
+          schema:
+            type: integer
+            default: 0
+      responses:
+        '200':
+          description: User's feed articles
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArticlesResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/articles/{slug}:
+    get:
+      tags:
+        - articles
+      summary: Get article
+      description: Get a single article by slug
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          description: Article slug
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Article details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArticleResponse'
+        '404':
+          description: Article not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    
+    put:
+      tags:
+        - articles
+      summary: Update article
+      description: Update an existing article
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          description: Article slug
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateArticleRequest'
+      responses:
+        '200':
+          description: Article successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArticleResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden - Not authorized to update this article
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Article not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    
+    delete:
+      tags:
+        - articles
+      summary: Delete article
+      description: Delete an existing article
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          description: Article slug
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Article successfully deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: article deleted successfully
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden - Not authorized to delete this article
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Article not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/articles/{slug}/favorite:
+    post:
+      tags:
+        - articles
+      summary: Favorite article
+      description: Mark an article as favorited
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          description: Article slug
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Article favorited
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArticleResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Article not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    
+    delete:
+      tags:
+        - articles
+      summary: Unfavorite article
+      description: Remove favorite from an article
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          description: Article slug
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Article unfavorited
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArticleResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Article not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/articles/{slug}/comments:
+    get:
+      tags:
+        - comments
+      summary: Get comments
+      description: Get comments for an article
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          description: Article slug
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of comments
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommentsResponse'
+        '404':
+          description: Article not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    
+    post:
+      tags:
+        - comments
+      summary: Add comment
+      description: Add a comment to an article
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          description: Article slug
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCommentRequest'
+      responses:
+        '200':
+          description: Comment successfully added
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommentResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Article not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/articles/{slug}/comments/{id}:
+    delete:
+      tags:
+        - comments
+      summary: Delete comment
+      description: Delete a comment from an article
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          description: Article slug
+          schema:
+            type: string
+        - name: id
+          in: path
+          required: true
+          description: Comment ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Comment successfully deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: comment deleted successfully
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden - Not authorized to delete this comment
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Article or comment not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token for authentication. Format "Token {jwt}"
+
+  schemas:
+    RegisterRequest:
+      type: object
+      required:
+        - user
+      properties:
+        user:
+          type: object
+          required:
+            - username
+            - email
+            - password
+          properties:
+            username:
+              type: string
+              minLength: 3
+              maxLength: 50
+              example: johndoe
+            email:
+              type: string
+              format: email
+              example: john@example.com
+            password:
+              type: string
+              minLength: 6
+              example: password123
+
+    LoginRequest:
+      type: object
+      required:
+        - user
+      properties:
+        user:
+          type: object
+          required:
+            - email
+            - password
+          properties:
+            email:
+              type: string
+              format: email
+              example: john@example.com
+            password:
+              type: string
+              example: password123
+
+    UpdateUserRequest:
+      type: object
+      required:
+        - user
+      properties:
+        user:
+          type: object
+          properties:
+            username:
+              type: string
+              example: johndoe
+            email:
+              type: string
+              format: email
+              example: john@example.com
+            password:
+              type: string
+              example: newpassword123
+            bio:
+              type: string
+              example: I work at State Farm
+            image:
+              type: string
+              format: uri
+              example: https://example.com/avatar.jpg
+
+    UserResponse:
+      type: object
+      properties:
+        user:
+          type: object
+          properties:
+            email:
+              type: string
+              example: john@example.com
+            token:
+              type: string
+              example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+            username:
+              type: string
+              example: johndoe
+            bio:
+              type: string
+              example: I work at State Farm
+            image:
+              type: string
+              example: https://example.com/avatar.jpg
+
+    CreateArticleRequest:
+      type: object
+      required:
+        - article
+      properties:
+        article:
+          type: object
+          required:
+            - title
+            - description
+            - body
+          properties:
+            title:
+              type: string
+              example: How to train your dragon
+            description:
+              type: string
+              example: Ever wonder how?
+            body:
+              type: string
+              example: It takes a Jacobian
+            tagList:
+              type: array
+              items:
+                type: string
+              example: ["dragons", "training"]
+
+    UpdateArticleRequest:
+      type: object
+      required:
+        - article
+      properties:
+        article:
+          type: object
+          properties:
+            title:
+              type: string
+              example: How to train your dragon
+            description:
+              type: string
+              example: Ever wonder how?
+            body:
+              type: string
+              example: It takes a Jacobian
+
+    ArticleResponse:
+      type: object
+      properties:
+        article:
+          $ref: '#/components/schemas/ArticleData'
+
+    ArticlesResponse:
+      type: object
+      properties:
+        articles:
+          type: array
+          items:
+            $ref: '#/components/schemas/ArticleData'
+        articlesCount:
+          type: integer
+          example: 1
+
+    ArticleData:
+      type: object
+      properties:
+        slug:
+          type: string
+          example: how-to-train-your-dragon
+        title:
+          type: string
+          example: How to train your dragon
+        description:
+          type: string
+          example: Ever wonder how?
+        body:
+          type: string
+          example: It takes a Jacobian
+        tagList:
+          type: array
+          items:
+            type: string
+          example: ["dragons", "training"]
+        createdAt:
+          type: string
+          format: date-time
+          example: "2023-01-01T00:00:00Z"
+        updatedAt:
+          type: string
+          format: date-time
+          example: "2023-01-01T00:00:00Z"
+        favorited:
+          type: boolean
+          example: false
+        favoritesCount:
+          type: integer
+          example: 0
+        author:
+          $ref: '#/components/schemas/ProfileData'
+
+    CreateCommentRequest:
+      type: object
+      required:
+        - comment
+      properties:
+        comment:
+          type: object
+          required:
+            - body
+          properties:
+            body:
+              type: string
+              example: Great article!
+
+    CommentResponse:
+      type: object
+      properties:
+        comment:
+          $ref: '#/components/schemas/CommentData'
+
+    CommentsResponse:
+      type: object
+      properties:
+        comments:
+          type: array
+          items:
+            $ref: '#/components/schemas/CommentData'
+
+    CommentData:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        body:
+          type: string
+          example: Great article!
+        createdAt:
+          type: string
+          format: date-time
+          example: "2023-01-01T00:00:00Z"
+        updatedAt:
+          type: string
+          format: date-time
+          example: "2023-01-01T00:00:00Z"
+        author:
+          $ref: '#/components/schemas/ProfileData'
+
+    ProfileData:
+      type: object
+      properties:
+        username:
+          type: string
+          example: johndoe
+        bio:
+          type: string
+          example: I work at State Farm
+        image:
+          type: string
+          example: https://example.com/avatar.jpg
+        following:
+          type: boolean
+          example: false
+
+    ErrorResponse:
+      type: object
+      properties:
+        errors:
+          type: object
+          properties:
+            body:
+              type: array
+              items:
+                type: string
+          example:
+            body:
+              - error message here

@@ -206,79 +206,50 @@ func (h *ArticleHandler) FeedArticles(c *gin.Context) {
 
 // FavoriteArticle handles POST /api/articles/:slug/favorite
 func (h *ArticleHandler) FavoriteArticle(c *gin.Context) {
-	_, exists := middleware.GetUserID(c)
+	userID, exists := middleware.GetUserID(c)
 	if !exists {
 		helpers.Unauthorized(c)
 		return
 	}
 
-	// TODO: Implement favorite logic when FavoriteService is ready
-	// For now, return a placeholder response
-	helpers.RespondWithError(c, http.StatusNotImplemented, "favorite feature not implemented yet")
+	slug := c.Param("slug")
 
-	// Once implemented:
-	// article, err := h.articleService.Favorite(slug, userID)
-	// if err != nil {
-	// 	helpers.UnprocessableEntity(c, err.Error())
-	// 	return
-	// }
-	// c.JSON(http.StatusOK, dtos.ArticleResponse{
-	// 	Article: h.articleService.ToArticleData(article, userID),
-	// })
+	article, err := h.articleService.Favorite(slug, userID)
+	if err != nil {
+		if err.Error() == "article not found" {
+			helpers.NotFound(c, err.Error())
+		} else {
+			helpers.UnprocessableEntity(c, err.Error())
+		}
+		return
+	}
+
+	c.JSON(http.StatusOK, dtos.ArticleResponse{
+		Article: h.articleService.ToArticleData(article, userID),
+	})
 }
 
 // UnfavoriteArticle handles DELETE /api/articles/:slug/favorite
 func (h *ArticleHandler) UnfavoriteArticle(c *gin.Context) {
-	_, exists := middleware.GetUserID(c)
+	userID, exists := middleware.GetUserID(c)
 	if !exists {
 		helpers.Unauthorized(c)
 		return
 	}
 
-	// TODO: Implement unfavorite logic when FavoriteService is ready
-	// For now, return a placeholder response
-	helpers.RespondWithError(c, http.StatusNotImplemented, "unfavorite feature not implemented yet")
+	slug := c.Param("slug")
 
-	// Once implemented:
-	// article, err := h.articleService.Unfavorite(slug, userID)
-	// if err != nil {
-	// 	helpers.UnprocessableEntity(c, err.Error())
-	// 	return
-	// }
-	// c.JSON(http.StatusOK, dtos.ArticleResponse{
-	// 	Article: h.articleService.ToArticleData(article, userID),
-	// })
-}
-
-// AddComment handles POST /api/articles/:slug/comments
-func (h *ArticleHandler) AddComment(c *gin.Context) {
-	_, exists := middleware.GetUserID(c)
-	if !exists {
-		helpers.Unauthorized(c)
+	article, err := h.articleService.Unfavorite(slug, userID)
+	if err != nil {
+		if err.Error() == "article not found" {
+			helpers.NotFound(c, err.Error())
+		} else {
+			helpers.UnprocessableEntity(c, err.Error())
+		}
 		return
 	}
 
-	// TODO: Implement comment logic when CommentService is ready
-	// For now, return a placeholder response
-	helpers.RespondWithError(c, http.StatusNotImplemented, "comment feature not implemented yet")
-}
-
-// GetComments handles GET /api/articles/:slug/comments
-func (h *ArticleHandler) GetComments(c *gin.Context) {
-	// TODO: Implement get comments logic when CommentService is ready
-	// For now, return a placeholder response
-	helpers.RespondWithError(c, http.StatusNotImplemented, "comment feature not implemented yet")
-}
-
-// DeleteComment handles DELETE /api/articles/:slug/comments/:id
-func (h *ArticleHandler) DeleteComment(c *gin.Context) {
-	_, exists := middleware.GetUserID(c)
-	if !exists {
-		helpers.Unauthorized(c)
-		return
-	}
-
-	// TODO: Implement delete comment logic when CommentService is ready
-	// For now, return a placeholder response
-	helpers.RespondWithError(c, http.StatusNotImplemented, "delete comment feature not implemented yet")
+	c.JSON(http.StatusOK, dtos.ArticleResponse{
+		Article: h.articleService.ToArticleData(article, userID),
+	})
 }

@@ -12,18 +12,16 @@ import (
 )
 
 type ArticleService struct {
-	articleRepo *repositories.ArticleRepository
-	// tagRepo      *repositories.TagRepository
-	// favoriteRepo *repositories.FavoriteRepository
-	userRepo *repositories.UserRepository
+	articleRepo  *repositories.ArticleRepository
+	favoriteRepo *repositories.FavoriteRepository
+	userRepo     *repositories.UserRepository
 }
 
 func NewArticleService(db *gorm.DB) *ArticleService {
 	return &ArticleService{
-		articleRepo: repositories.NewArticleRepository(db),
-		// tagRepo:      repositories.NewTagRepository(db),
-		// favoriteRepo: repositories.NewFavoriteRepository(db),
-		userRepo: repositories.NewUserRepository(db),
+		articleRepo:  repositories.NewArticleRepository(db),
+		favoriteRepo: repositories.NewFavoriteRepository(db),
+		userRepo:     repositories.NewUserRepository(db),
 	}
 }
 
@@ -118,38 +116,38 @@ func (s *ArticleService) Feed(userID uint, limit, offset int) ([]models.Article,
 	return s.articleRepo.Feed(followingIDs, limit, offset)
 }
 
-// func (s *ArticleService) Favorite(slug string, userID uint) (*models.Article, error) {
-// 	article, err := s.articleRepo.FindBySlug(slug)
-// 	if err != nil {
-// 		return nil, errors.New("article not found")
-// 	}
+func (s *ArticleService) Favorite(slug string, userID uint) (*models.Article, error) {
+	article, err := s.articleRepo.FindBySlug(slug)
+	if err != nil {
+		return nil, errors.New("article not found")
+	}
 
-// 	if err := s.favoriteRepo.Favorite(userID, article.ID); err != nil {
-// 		return nil, errors.New("failed to favorite article")
-// 	}
+	if err := s.favoriteRepo.Favorite(userID, article.ID); err != nil {
+		return nil, errors.New("failed to favorite article")
+	}
 
-// 	return s.articleRepo.FindByID(article.ID)
-// }
+	return s.articleRepo.FindByID(article.ID)
+}
 
-// func (s *ArticleService) Unfavorite(slug string, userID uint) (*models.Article, error) {
-// 	article, err := s.articleRepo.FindBySlug(slug)
-// 	if err != nil {
-// 		return nil, errors.New("article not found")
-// 	}
+func (s *ArticleService) Unfavorite(slug string, userID uint) (*models.Article, error) {
+	article, err := s.articleRepo.FindBySlug(slug)
+	if err != nil {
+		return nil, errors.New("article not found")
+	}
 
-// 	if err := s.favoriteRepo.Unfavorite(userID, article.ID); err != nil {
-// 		return nil, errors.New("failed to unfavorite article")
-// 	}
+	if err := s.favoriteRepo.Unfavorite(userID, article.ID); err != nil {
+		return nil, errors.New("failed to unfavorite article")
+	}
 
-// 	return s.articleRepo.FindByID(article.ID)
-// }
+	return s.articleRepo.FindByID(article.ID)
+}
 
-// func (s *ArticleService) IsFavorited(articleID, userID uint) bool {
-// 	if userID == 0 {
-// 		return false
-// 	}
-// 	return s.favoriteRepo.IsFavorited(userID, articleID)
-// }
+func (s *ArticleService) IsFavorited(articleID, userID uint) bool {
+	if userID == 0 {
+		return false
+	}
+	return s.favoriteRepo.IsFavorited(userID, articleID)
+}
 
 func (s *ArticleService) IsFollowing(currentUserID, authorID uint) bool {
 	if currentUserID == 0 {
@@ -166,14 +164,14 @@ func (s *ArticleService) ToArticleData(article *models.Article, currentUserID ui
 	}
 
 	return dtos.ArticleData{
-		Slug:        article.Slug,
-		Title:       article.Title,
-		Description: article.Description,
-		Body:        article.Body,
-		TagList:     tagList,
-		CreatedAt:   article.CreatedAt.Format(time.RFC3339),
-		UpdatedAt:   article.UpdatedAt.Format(time.RFC3339),
-		// Favorited:      s.IsFavorited(article.ID, currentUserID),
+		Slug:           article.Slug,
+		Title:          article.Title,
+		Description:    article.Description,
+		Body:           article.Body,
+		TagList:        tagList,
+		CreatedAt:      article.CreatedAt.Format(time.RFC3339),
+		UpdatedAt:      article.UpdatedAt.Format(time.RFC3339),
+		Favorited:      s.IsFavorited(article.ID, currentUserID),
 		FavoritesCount: article.FavoritesCount,
 		Author: dtos.ProfileData{
 			Username:  article.Author.Username,

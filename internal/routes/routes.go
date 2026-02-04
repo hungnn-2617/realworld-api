@@ -63,9 +63,9 @@ func SetupRoutes(router *gin.Engine, appContainer *bootstrap.AppContainer) {
 			articles.DELETE("/:slug/favorite", middleware.AuthRequired(), appContainer.ArticleHandler.UnfavoriteArticle)
 
 			// Comments (requires auth for POST/DELETE, optional for GET)
-			articles.POST("/:slug/comments", middleware.AuthRequired(), appContainer.ArticleHandler.AddComment)
-			articles.GET("/:slug/comments", middleware.AuthOptional(), appContainer.ArticleHandler.GetComments)
-			articles.DELETE("/:slug/comments/:id", middleware.AuthRequired(), appContainer.ArticleHandler.DeleteComment)
+			articles.POST("/:slug/comments", middleware.AuthRequired(), appContainer.CommentHandler.AddComment)
+			articles.GET("/:slug/comments", middleware.AuthOptional(), appContainer.CommentHandler.GetComments)
+			articles.DELETE("/:slug/comments/:id", middleware.AuthRequired(), appContainer.CommentHandler.DeleteComment)
 		}
 	}
 }
