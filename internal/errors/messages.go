@@ -16,6 +16,9 @@ const (
 	ErrEmailAlreadyTaken    = "email already taken"
 	ErrUsernameAlreadyTaken = "username already taken"
 
+	// Profile errors
+	ErrCannotFollowYourself = "cannot follow yourself"
+
 	// Article errors
 	ErrArticleNotFound     = "article not found"
 	ErrNotAuthorizedUpdate = "not authorized to update this article"
@@ -65,4 +68,8 @@ func IsNotAuthorizedDelete(err error) bool {
 
 func IsNotAuthorizedDeleteComment(err error) bool {
 	return err != nil && err.Error() == ErrNotAuthorizedDeleteComment
+}
+
+func IsCannotFollowYourself(err error) bool {
+	return err != nil && err.Error() == ErrCannotFollowYourself
 }

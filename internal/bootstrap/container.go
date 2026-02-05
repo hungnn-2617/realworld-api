@@ -12,6 +12,8 @@ type AppContainer struct {
 	DB              *gorm.DB
 	UserService     *services.UserService
 	UserHandler     *handlers.UserHandler
+	ProfileService  *services.ProfileService
+	ProfileHandler  *handlers.ProfileHandler
 	ArticleService  *services.ArticleService
 	CommentService  *services.CommentService
 	TagService      *services.TagService
@@ -26,12 +28,14 @@ func NewAppContainer() *AppContainer {
 
 	// Initialize services
 	userService := services.NewUserService(db)
+	profileService := services.NewProfileService(db)
 	articleService := services.NewArticleService(db)
 	commentService := services.NewCommentService(db)
 	tagService := services.NewTagService(db)
 
 	// Initialize handlers
 	userHandler := handlers.NewUserHandler(userService)
+	profileHandler := handlers.NewProfileHandler(profileService)
 	articleHandler := handlers.NewArticleHandler(articleService)
 	commentHandler := handlers.NewCommentHandler(commentService)
 	tagHandler := handlers.NewTagHandler(tagService)
@@ -41,6 +45,8 @@ func NewAppContainer() *AppContainer {
 		DB:              db,
 		UserService:     userService,
 		UserHandler:     userHandler,
+		ProfileService:  profileService,
+		ProfileHandler:  profileHandler,
 		ArticleService:  articleService,
 		CommentService:  commentService,
 		TagService:      tagService,

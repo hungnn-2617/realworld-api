@@ -37,6 +37,14 @@ func SetupRoutes(router *gin.Engine, appContainer *bootstrap.AppContainer) {
 			user.PUT("", appContainer.UserHandler.UpdateUser)     // Update current user
 		}
 
+		// Profile routes
+		profiles := api.Group("/profiles")
+		{
+			profiles.GET("/:username", middleware.AuthOptional(), appContainer.ProfileHandler.GetProfile) // Get profile (optional auth)
+			profiles.POST("/:username/follow", middleware.AuthRequired(), appContainer.ProfileHandler.FollowUser)   // Follow user
+			profiles.DELETE("/:username/follow", middleware.AuthRequired(), appContainer.ProfileHandler.UnfollowUser) // Unfollow user
+		}
+
 		// Tags route (no auth required)
 		api.GET("/tags", appContainer.TagHandler.GetTags)
 
