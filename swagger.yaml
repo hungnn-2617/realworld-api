@@ -596,6 +596,108 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
 
+  /api/profiles/{username}:
+    get:
+      tags:
+        - profiles
+      summary: Get profile
+      description: Get a user's profile by username
+      parameters:
+        - name: username
+          in: path
+          required: true
+          description: Username of the profile to get
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Profile details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProfileResponse"
+        "404":
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /api/profiles/{username}/follow:
+    post:
+      tags:
+        - profiles
+      summary: Follow user
+      description: Follow a user by username
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: username
+          in: path
+          required: true
+          description: Username of the user to follow
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successfully followed user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProfileResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "422":
+          description: Cannot follow yourself
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+    delete:
+      tags:
+        - profiles
+      summary: Unfollow user
+      description: Unfollow a user by username
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: username
+          in: path
+          required: true
+          description: Username of the user to unfollow
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successfully unfollowed user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProfileResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
   /api/tags:
     get:
       tags:
@@ -863,6 +965,12 @@ components:
           format: date-time
           example: "2023-01-01T00:00:00Z"
         author:
+          $ref: "#/components/schemas/ProfileData"
+
+    ProfileResponse:
+      type: object
+      properties:
+        profile:
           $ref: "#/components/schemas/ProfileData"
 
     ProfileData:
